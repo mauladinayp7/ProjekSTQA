@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_flutter/hive_flutter.dart'; // Import Hive Flutter untuk database lokal.
 import 'package:prj2/layout/home_page.dart';
 import '../model/contact.dart';
 
@@ -20,7 +20,11 @@ class _FormPageState extends State<FormPage> {
   @override
   void initState() {
     super.initState();
+    
+    // Menginisialisasi kotak Hive untuk data kontak.
     box = Hive.box('databaseContact');
+    
+    // Mencetak panjang kotak Hive (jumlah item di dalamnya).
     print("contactBox.length : ${box.values.length}");
   }
 
@@ -28,73 +32,78 @@ class _FormPageState extends State<FormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-          child: Form(
-        key: formkey,
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Name',
-                  hintText: 'Enter your name',
-                  border: OutlineInputBorder(),
+        child: Form(
+          key: formkey,
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              children: [
+                TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: 'Name',
+                    hintText: 'Enter your name',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    name = value; // Menyimpan nilai nama saat berubah.
+                  },
                 ),
-                onChanged: (value) {
-                  name = value;
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'Enter your email',
-                  border: OutlineInputBorder(),
+                const SizedBox(
+                  height: 10,
                 ),
-                onChanged: (value) {
-                  email = value;
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Phone',
-                  hintText: 'Enter your phone',
-                  border: OutlineInputBorder(),
+                TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    hintText: 'Enter your email',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    email = value; // Menyimpan nilai email saat berubah.
+                  },
                 ),
-                onChanged: (value) {
-                  phone = value;
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  if (formkey.currentState!.validate()) {
-                    formkey.currentState!.save();
+                const SizedBox(
+                  height: 10,
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: 'Phone',
+                    hintText: 'Enter your phone',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    phone = value; // Menyimpan nilai telepon saat berubah.
+                  },
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (formkey.currentState!.validate()) {
+                      formkey.currentState!.save(); // Menyimpan semua nilai input.
 
-                    Contact ct =
-                        Contact(name: name!, email: email!, phone: phone!);
-                    box.add(ct);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomePage(),
-                      ),
-                    );
-                  }
-                },
-                child: const Text('Save'),
-              ),
-            ],
+                      // Membuat objek Contact dari input yang telah disimpan.
+                      Contact ct = Contact(name: name!, email: email!, phone: phone!);
+                      
+                      // Menambahkan objek Contact ke kotak Hive.
+                      box.add(ct);
+                      
+                      // Berpindah ke halaman utama setelah menyimpan data.
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HomePage(),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            ),
           ),
         ),
-      )),
+      ),
     );
   }
 }
